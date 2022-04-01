@@ -278,7 +278,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
         var dynISFadjust = profile.DynISFAdjust;
         var dynISFadjust = ( dynISFadjust / 100 );
         var TDD = (dynISFadjust * TDD);
-        var variable_sens = (277700 / ( TDD * bg));
+        var variable_sens = (1800 / ( TDD * Math.log((bg/75)+1)));
         variable_sens = round(variable_sens,1);
         if (dynISFadjust > 1 ) {
             console.log("TDD adjustment factor is: " +dynISFadjust+"; ");
@@ -808,19 +808,20 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
          console.log("EventualBG is" +eventualBG+" ;");
 
          if (bg > target_bg && glucose_status.delta < 3 && glucose_status.delta > -3 && glucose_status.short_avgdelta > -3 && glucose_status.short_avgdelta < 3 && eventualBG > target_bg && eventualBG < bg ) {
-             var future_sens = ( 277700 / (TDD * ((eventualBG * 0.5) + (bg * 0.5) ) ) );
+             var future_sens = ( 1800 / (TDD * Math.log((((eventualBG * 0.5) + (bg * 0.5) )/75) +1 )
+              ));
                  console.log("Future state sensitivity is " +future_sens+" based on eventual and current bg due to flat glucose level above target");
                  rT.reason += "Dosing sensitivity: " +future_sens+" using eventual BG;";
          }
 
          else if( glucose_status.delta > 0 && eventualBG > target_bg ) {
-             var future_sens = ( 277700 / (TDD * bg) );
+             var future_sens = ( 1800 / (TDD * Math.log((bg/75)+1) ));
              console.log("Future state sensitivity is " +future_sens+" using current bg due to small delta or variation");
              rT.reason += "Dosing sensitivity: " +future_sens+" using current BG;";
              }
 
          else {
-             var future_sens = ( 277700 / (TDD * eventualBG) );
+             var future_sens = ( 1800 / (TDD * Math.log((eventualBG/75)+1) ));
          console.log("Future state sensitivity is " +future_sens+" based on eventual bg due to -ve delta");
          rT.reason += "Dosing sensitivity: " +future_sens+" using eventual BG;";
          }
